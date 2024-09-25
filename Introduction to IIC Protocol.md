@@ -30,12 +30,12 @@ I2C（Inter-Integrated Circuit）
 <!-- slide -->
 Example of IIC-bus application
 ---
-![alt text](image.png)
+![alt text](./assets/image.png)
 - 总线通过上拉电阻接到电源。当I2C设备空闲时，会输出高阻态，而当所有设备都空闲， 都输出高阻态时，由上拉电阻把总线拉成高电平。
 
 - 多个主机同时使用总线时，为了防止数据冲突，会利用仲裁方式决定由哪个设备占用总线
   <!-- slide -->
-
+  
 - start: DAT falling while CLK is high
 
 - I2C Address is 7 bits
@@ -45,9 +45,9 @@ Example of IIC-bus application
 - ACK: 0; NACK: 1
 
 - stop: DAT rising while CLK is high
-  ![alt text](image-1.png)
+  ![alt text](./assets/image-1.png)
   <!-- slide -->
-  ![alt text](image-2.png)
+  ![alt text](./assets/image-2.png)
   <!-- slide -->
 
   ````c
@@ -89,7 +89,7 @@ Example of IIC-bus application
   	struct list_head clients;
   };
   ````
-
+  
   ```c
   struct i2c_client {
   	unsigned short flags;		/* div., see below		*///标志
@@ -361,6 +361,12 @@ MODULE_LICENSE("GPL");
 <!-- slide -->
 
 Thank you!
+
+
+
+
+
+
 
 <!-- slide -->
 
