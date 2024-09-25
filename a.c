@@ -5,6 +5,8 @@ static const struct rtc_class_ops ds1672_rtc_ops = {
 
 static int ds1672_probe(struct i2c_client *client,
 			const struct i2c_device_id *id)
+
+			
 {
 	int err = 0;
 	struct rtc_device *rtc;
