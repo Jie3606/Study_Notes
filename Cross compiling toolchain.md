@@ -75,3 +75,6 @@ GPL（GNU General Public License）是GNU项目发布的一种自由软件许可
 - modprobe: 用於自動加載、卸載和查詢kernel module。根據module之間的依賴關係自動加載所需的kernel modules。
 - insmod: 手動加載kernel module
 - rmmod： 卸載指定kernel module
+
+
+Linux 测试
