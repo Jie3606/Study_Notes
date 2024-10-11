@@ -65,11 +65,11 @@ UARTn_RTS|輸出|請求發送握手信號
 - 當UART接收時，對於16x的採樣模式，在第8個BLCK週期進行採樣，對於13x的採樣模式，在第6個BLCK週期進行採樣。
 - 16× 或 13× 参考时钟通过配置模式定义寄存器 (MDR) 中的 OSM_SEL 位来选择
    - [MDR.OSM_SEL = 0]
-$$  
+$$
 Divisor =  \frac{UART Input Clock Frequency}{Desired Baud Rate * 16}  
 $$
     - [MDR.OSM_SEL = 1] 
-$$  
+$$
 Divisor =  \frac{UART Input Clock Frequency}{Desired Baud Rate * 13}  
 $$
 - 兩個8bit的寄存器字段(DLH和DLL)稱為除數鎖存器，用於存儲16位除數。
@@ -155,8 +155,9 @@ UARTn_RTS signals
 ### UART operation miscellaneous
 ------
 - `unsigned int uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
+
 		   const struct ktermios *old, unsigned int min, unsigned int max)`
-    - 通過解碼termios結構體來獲取指定串口的波特率
+	- 通過解碼termios結構體來獲取指定串口的波特率
 - `unsigned int uart_get_divisor(struct uart_port *port, unsigned int baund)`
     - 用於計算某一波特率的串口時鐘分頻數
 - `void uart_update_timeout(struct uart_port *port,unsigned int cflag, unsigned int baud)`
@@ -166,7 +167,7 @@ UARTn_RTS signals
 <!-- slide -->
 
 ### UART data structure
------ 
+-----
 <center>
 
 ``` c 
@@ -376,8 +377,10 @@ struct uart_ops {
  int  (*verify_port)(struct uart_port *, struct serial_struct *);`
      - 配置UART端口的硬件参数并验证端口的配置。
 
-
 <!-- slide -->
+![ioctl.png](https://www.helloimg.com/i/2024/10/11/6708ccb23d962.png)
+
+![ioctl.png](./assets/6708ccb23d962.png)
 
 ### REFERENCE
 -------
