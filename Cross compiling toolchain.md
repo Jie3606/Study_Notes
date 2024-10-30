@@ -3,10 +3,6 @@
 - **objdump**
   - **功能**：显示二进制文件信息，包括反汇编代码、段信息、符号表等。
   - **使用场景**：用于调试、分析和理解程序的执行流程. 。
-
-
-
-
 - **readelf**
   - **功能**：专门用于显示ELF格式二进制文件的信息，如文件头、段、符号表等。
   - **使用场景**：深入理解ELF文件的内部结构和组织。
@@ -75,6 +71,3 @@ GPL（GNU General Public License）是GNU项目发布的一种自由软件许可
 - modprobe: 用於自動加載、卸載和查詢kernel module。根據module之間的依賴關係自動加載所需的kernel modules。
 - insmod: 手動加載kernel module
 - rmmod： 卸載指定kernel module
-
-
-Linux 测试
