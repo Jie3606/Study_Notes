@@ -3,8 +3,6 @@
 `git init`
  建立新的本地端 Repository。
 
-
-
 `git clone [Repository URL]`
  复制远程的 Repository 文件到本地端。
 
@@ -43,7 +41,7 @@
 
 
 
- 
+
 
 git 在没有错误的情况下进行空的commit git commit
 

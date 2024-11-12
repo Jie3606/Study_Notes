@@ -21,7 +21,3 @@ sudo mount -o remount -rw /var/snap/firefox/common/host-hunspell
 
 路径名根据 -> /dev/sda3确定
 ```
-
-
-
-<!-- slide -->

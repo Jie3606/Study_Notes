@@ -13,6 +13,7 @@ Linux 的 device driver 架構, 不一定限定控制 hardware, 也可以是 pse
 - Memory devices(/dev/loop0, /dev/ram0)
 - Virtual devices (/dev/zero, /dev/null, /dev/full)
 
+
 https://nanxiao.me/linux-kernel-note-20-device-major-minor-number/
 
 ## 设备的major和minor号

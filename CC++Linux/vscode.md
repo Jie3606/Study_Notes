@@ -2,7 +2,7 @@
 
 ### VScode快捷键
 
-| 快捷键               | 功能 Function                       |
+| 快捷键                | 功能 Function                       |
 | -------------------- | ----------------------------------- |
 | Ctrl + Shift + P，F1 | 显示命令面板 Show Command Palette   |
 | Ctrl + P             | 快速打开 Quick Open                 |

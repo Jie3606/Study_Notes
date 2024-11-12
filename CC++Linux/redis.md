@@ -1,27 +1,27 @@
 # Redis是什么？
 
-◼ 它是一种基于键值对的NoSQL数据库； 
+◼ 它是一种基于键值对的NoSQL数据库；
 
 ◼ 它的值由多种数据结构及算法所组成
 
 1. NoSQL泛指非关系型的数据库；
-2. 可解释为“non-relational”、“Not Only SQL”。![image-20230609170148402](https://raw.githubusercontent.com/Jie3606/image/main/image-20230609170148402.png?token=AWOQ2IB5W2AJ7KSQMQF4EZTG6VLNI)
+2. 可解释为“non-relational”、“Not Only SQL”。!
 
 
 
-Redis有哪些优势？ 
+Redis有哪些优势？
 
-优势 说明 
+优势 说明
 
-速度惊人 读写性能可达10万/秒（所有数据放在内存中 / 采用C语言实现 / 采用单线程架构） 
+速度惊人 读写性能可达10万/秒（所有数据放在内存中 / 采用C语言实现 / 采用单线程架构）
 
-功能丰富 1. 键过期功能；2. 发布订阅功能；3. 支持Lua脚本和模块；4. 支持事务和流水线； 
+功能丰富 1. 键过期功能；2. 发布订阅功能；3. 支持Lua脚本和模块；4. 支持事务和流水线；
 
-可持久化 支持三种形式的持久化：1. RDB持久化；2. AOF持久化；3. RDB-AOF混合持久化； 
+可持久化 支持三种形式的持久化：1. RDB持久化；2. AOF持久化；3. RDB-AOF混合持久化；
 
-支持主从复制 通过主从复制，可以保留多个相同数据的副本，通过冗余存储来提高数据安全性； 
+支持主从复制 通过主从复制，可以保留多个相同数据的副本，通过冗余存储来提高数据安全性；
 
-支持哨兵模式 哨兵可以自动发现故障节点，自动进行故障转移，从而构建出高可用的Redis服务； 
+支持哨兵模式 哨兵可以自动发现故障节点，自动进行故障转移，从而构建出高可用的Redis服务；
 
 支持集群模式 集群是Redis的分布式解决方案，可以横向扩展其处理能力，并进行自动故障转移
 
@@ -34,7 +34,7 @@ Redis有哪些优势？
 可以在配置文件中配置Redis进行快照保存的时机：
 
 ```text
-save [seconds] [changes] 
+save [seconds] [changes]
 ```
 
 意为在seconds秒内如果发生了changes次数据修改，则进行一次RDB快照保存
@@ -59,8 +59,8 @@ save [seconds] [changes]
 AOF默认是关闭的，如要开启，进行如下配置：
 
 ```text
-  # 第594行  
-  appendonly  yes 
+  # 第594行
+  appendonly  yes
 ```
 
 ### 配置AOF
@@ -107,7 +107,7 @@ AOF rewrite可以通过BGREWRITEAOF命令触发，也可以配置Redis定期自�
 ### RDB or AOF
 
 每一次RDB快照和AOF Rewrite都需要Redis主进程进行fork操作。fork操作本身可能会产生较高的耗时，与CPU和Redis占用的内存大小有关。根据具体的情况合理配置RDB快照和AOF Rewrite时机，避免过于频繁的fork带来的延迟。
-	
+
 Redis在fork子进程时需要将内存分页表拷贝至子进程，以占用了24GB内存的Redis实例为例，共需要拷贝48MB的数据。在使用单Xeon 2.27Ghz的物理机上，这一fork操作耗时216ms。
 	第二章 Redis 事务
 
