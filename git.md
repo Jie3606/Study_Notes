@@ -41,7 +41,7 @@
 
 
 
-
+git clone ssh://jieliu@172.16.63.202:29418/projects/RC2/ver_val && scp -p -P 29418 jieliu@172.16.63.202:hooks/commit-msg ver_val/.git/hooks/
 
 git 在没有错误的情况下进行空的commit git commit
 
