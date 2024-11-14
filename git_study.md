@@ -72,20 +72,20 @@ git commit -m "Renamed old_file.txt to new_file.txt"
 如果你没有使用 `git mv`，也可以通过手动重命名文件并更新 Git 来完成这项操作：
 
 1. 手动重命名文件（使用操作系统的文件管理器或者 `mv` 命令）。
-   
+
    ```bash
    mv old_file.txt new_file.txt
    ```
 
 2. 告诉 Git 删除旧文件并添加新文件：
-   
+
    ```bash
    git rm old_file.txt
    git add new_file.txt
    ```
 
 3. 提交修改：
-   
+
    ```bash
    git commit -m "Renamed old_file.txt to new_file.txt"
    ```
@@ -112,7 +112,7 @@ git add filename 和 git add . 的区别
 ### 1. **`git add filename`**
 - **作用**：将指定的单个文件或目录添加到暂存区。
 - **适用场景**：你只想添加一个或几个特定文件，而不是所有更改。
-  
+
 
 **示例**：
 ```bash
@@ -128,7 +128,7 @@ git add file1.txt file2.txt
 ### 2. **`git add .`**
 - **作用**：将当前目录及其子目录下所有已修改、删除、新增的文件添加到暂存区。
 - **适用场景**：当你想将当前工作目录下的所有修改一次性提交时使用。
-  
+
 
 **示例**：
 ```bash
@@ -146,14 +146,14 @@ git add .
 
 总结：`git add .` 是一种便捷的命令，适用于在进行大量更改时一次性将所有修改添加到暂存区，而 `git add filename` 则适用于精确地控制哪些文件应该被添加到暂存区。
 # user
-chmod +644 shell_script_notes.md 
+chmod +644 shell_script_notes.md
 #  ChatGPT
 在命令 `chmod +644 shell_script_notes.md` 中，实际上是一个不完全的命令语法，可能是想给文件设置权限。让我们分解一下：
 
 ### 命令分析
 - `chmod` 是用于修改文件或目录权限的命令。
 - `+644` 这个部分并不正确，正确的方式是使用 `chmod` 设置具体的权限，应该写成 `644`。
-  
+
 ### 说明：
 - `644` 权限表示：
   - 文件拥有者 (owner) 拥有读和写权限 (`rw-`)，
@@ -212,7 +212,7 @@ Changes to be committed:
 
 ### 这些修改的状态：
 - 所有的这些修改（包括重命名和修改）都已经被添加到暂存区（staging area），这意味着它们准备好被提交。
-  
+
 ### 如果你想进一步操作：
 - **提交修改**：你可以通过以下命令来提交这些变化：
   ```bash
@@ -293,9 +293,9 @@ Changes to be committed:
   commit 74b50ef
   Author: Your Name <your.email@example.com>
   Date:   Mon Nov 14 14:35:46 2024 +0000
-  
+
       updata
-  
+
    3 files changed, 0 insertions(+), 0 deletions(-)
    rename git.md => Git.md (100%)
    rename Weekly_Report&schedule.md => Weekly_Report_schedule.md (100%)
@@ -670,7 +670,7 @@ git ls-files -s
 git 在实际开发中实用的命令类似以下列举更多的命令 查看文件的重命名和权限变化：使用 git log --stat 或 git log -p。
 查看某个特定提交的详细信息：使用 git show --stat 或 git show -p。
 查看所有文件的权限变化：使用 git ls-files -s。
-查看文件名和权限的变化：使用 git diff --name-status，查看文件重命名和权限变化。 
+查看文件名和权限的变化：使用 git diff --name-status，查看文件重命名和权限变化。
 #  ChatGPT
 在 Git 的实际开发中，确实有许多命令可以帮助开发者更高效地管理和检查代码库的状态，查看更改、文件修改、合并冲突等。除了你列出的命令，下面列出一些常用且实用的 Git 命令，帮助你更好地处理文件变更、历史记录、分支管理等。
 
@@ -1429,350 +1429,4 @@ git reset --hard HEAD
   git merge --abort
   ```
 
-`git merge` 是 Git 中非常强大的命令，能够帮助你在多个分支之间进行代码合并，处理冲突和管理提交历史。
-电池管理 IC 驱动
-# user
-题目：实作电池管理 IC 的通讯指令解析器
-用 C 语言程序来模拟电池管理 IC 的 device driver，该程序主要是模拟：
-电池管理 IC 运行流程
-接收指令 -> 执行 IC 功能 -> 印出暂存器状态 -> 发送回应
-每一次执行该流程都要印出暂存器状态
-功能
-■电池管理 IC 对外部装置（external device）通讯界面的发送与接收
-通讯的架构为 master/slave 架构，外部装置（master）对电池管理 IC 发送指令； 电池管理 IC（slave）会针对指令发送回应，但不会主动发送指令
-每次发送或接收的资料，以 1 byte (0x00 ~ 0xff) 为单位
-■对 电池管理 IC 的功能设定
-透过设定暂存器来执行 IC 功能
-执行 IC 功能后，会改变对应的 register 状态
-■电池管理 IC 的状态（register 状态）输出
-不包含对于系统 timing 或者讯号的模拟
-
-
-此设备是一个 电池管理 IC，通过通信协定接收指令来设定内部暂存器，并回传电池状态。设备的每个暂存器负责不同的电池管理功能，例如电池电量、温度、以及电源输出等。请为这颗电池管理 IC撰写 Firmware，功能是通讯指令解析器，能够根据通讯协定的指令操作该电池 IC 的内部暂存器。
-功能需求：
-1.通讯协定指令格式：
-每条指令由 5 bytes 组成：
-■0xFA 0xFA：两个位元组的固定起始码，表示指令开始。
-■<Operation>：一个字节的操作码，0x01 表示写入，0x02 表示读取。
-■<Register>：一个字节的暂存器地址，有效范围为 0x00 到 0x07。
-■<Data>：一个字节的数据，范围为 0x00 到 0xF9
-2.暂存器地址<Register>：
-0x00：设备 ID（只读）
-0x01：保留位（暂时不使用）
-0x02：温度数据（只读）
-0x03：最高温度（可读写）
-0x04：电池电量高位（只读）
-0x05：电池电量低位（只读）
-0x06：电源输出启动（只写）
-0x07：电源状态（只读）
-3.指令<Operation>处理：
-写入操作 (0x01)：
-■接收指令
-当接收到 0xFA 0xFA 0x01 <Register> <Data> 时
-■执行 IC 功能
-根据暂存器地址将数据写入对应暂存器中。若暂存器为可写，则写入成功
-■发送回应
-回传 0xFA 0xFA 0x11 <Register> <Data>
-读取操作 (0x02)：
-■接收指令
-当接收到 0xFA 0xFA 0x02 <Register> 0x00 时
-■执行 IC 功能
-读取对应暂存器的数据。若暂存器为可读
-■发送回应
-则回传 0xFA 0xFA 0x12 <Register> <Data>。
-4.错误处理：
-接收指令
-■当收到内容不符合通讯协定指令格式，发生错误时
-发送回应
-■回传错误码 0xFA 0xFA 0x13 0x00 <Error Code>。
-错误码 <Error Code> 列表：
-根据设备的操作与不同情况，当出现错误时，回传的数据格式为： 0xFA 0xFA 0x13 0x00 <Error Code>。其中，0x13 表示回报错误，最后的 <Error Code> 表示具体的错误原因。
-错误码	错误描述	回传数据范例
-0x01	无效地址	0xFA 0xFA 0x13 0x00 0x01
-0x02	尝试写入只读暂存器	0xFA 0xFA 0x13 0x00 0x02
-0x03	尝试读取只写暂存器	0xFA 0xFA 0x13 0x00 0x03
-0x04	无效操作码	0xFA 0xFA 0x13 0x00 0x04
-0x05	读取操作时数据栏位非 0x00	0xFA 0xFA 0x13 0x00 0x05
-5.测试用例：
-范例 1（写入操作）：
-接收：0xFA 0xFA 0x01 0x03 0x7A（写入数据 0x7A 到暂存器 0x03，设定最高温度）
-回传：0xFA 0xFA 0x11 0x03 0x7A（表示成功写入）
-范例 2（读取操作）：
-接收：0xFA 0xFA 0x02 0x02 0x00（读取暂存器 0x02 的温度数据）
-回传：0xFA 0xFA 0x12 0x02 0x32（暂存器 0x02 中的数据为 0x32）
-范例 3（写入只读暂存器）：
-接收：0xFA 0xFA 0x01 0x00 0xFF（试图写入设备 ID 暂存器）
-回传：0xFA 0xFA 0x10 0x00 0x02（表示错误）
-范例 4（读取只写暂存器）：
-接收：0xFA 0xFA 0x02 0x06 0x00（试图读取电源输出启动暂存器）
-回传：0xFA 0xFA 0x10 0x00 0x03（表示错误）
-任务目标：
-实作一个解析器，能够根据给定的通讯指令操作电池管理 IC 的内部暂存器，并处理设备的状态。
-根据不同的操作命令，完成设备状态的读取与写入功能，并回传正确的结果或错误码。
-所有指令操作完毕后必须打印出 registers 状态(已实作完成)。
-
-
-1. 基本功能：通讯指令解析与处理（30 分）
-起始码与基本指令解析 (10 分)：
-正确解析 0xFA 0xFA 作为起始码。
-正确解析指令的格式，包括操作码、暂存器位址和数据。
-写入操作 (5 分)：
-正确处理 0x01 写入操作，并对应暂存器位址进行正确的写入操作。
-读取操作 (5 分)：
-正确处理 0x02 读取操作，并从可读暂存器正确读取数据。
-回应处理 (10 分)：
-正确处理并回应读取和写入操作，能够根据操作结果回传正确的回应格式。
-2. 错误处理 (30 分)
-无效地址处理 (10 分)：
-对超出范围的暂存器地址进行检查，并返回错误码 0x01。
-只读/只写错误处理 (10 分)：
-正确处理对只读暂存器的写入操作和对只写暂存器的读取操作，返回错误码 0x02 和 0x03。
-操作码错误处理 (5 分)：
-正确检查并处理非法的操作码，回传错误码 0x04。
-数据错误处理 (5 分)：
-读取操作时检查 Data 是否为 0x00，否则返回错误码 0x05。
-3. 程序质量与设计 (20 分)
-程序结构与可读性 (10 分)：
-设计良好的代码结构，函数分离明确，变量命名合理，逻辑简洁易懂。
-边界条件与健壮性 (10 分)：
-代码能够正确处理边界条件和异常情况，如通讯中断、不完整数据等，并防止潜在的程序崩溃。
-4. 处理通讯中断情况 (test_cases_incomplete) (20 分)
-
-
-/*
-          +---------------------------+
-          |       External Device      |
-          +---------------------------+
-               |               |
-               |               |
-        Data Line (TX/RX)   Power Line (VCC/GND)
-               |               |
-               |               |
-          +---------------------------+
-          |         Battery           |
-          |     +------------+        |
-          |     | Battery IC |        |
-          |     +------------+        |
-          +---------------------------+
-*/
-
-/*
-+--------------------+
-|  Register Address  |
-+--------------------+
-| 0x00 | Device ID   | (只读)
-| 0x01 | Reserved    | (保留)
-| 0x02 | Temperature | (只读)
-| 0x03 | High Temp   | (可读写)
-| 0x04 | Battery Hi  | (只读)
-| 0x05 | Battery Lo  | (只读)
-| 0x06 | Power Out   | (只写)
-| 0x07 | Power Status| (只读)
-+--------------------+
-*/
-/*
-+-----------------------------------------------------------+
-|    0xFA    |    0xFA    |  Operation  | Register  | Data  |
-+-----------------------------------------------------------+
-  Start Byte 1  Start Byte 2   Operation   Register    Data
-    (1 Byte)     (1 Byte)      (1 Byte)    (1 Byte)  (1 Byte)
-*/
-
-
-#include <stdio.h>
-#include <stdint.h>
-
-// 暂存器预设值
-uint8_t registers[8] = {
-    0x01, // 0x00: 设备 ID
-    0x00, // 0x01: 保留位
-    0x32, // 0x02: 温度
-    0x50, // 0x03: 最高温度
-    0x03, // 0x04: 电池电量高位
-    0xA5, // 0x05: 电池电量低位
-    0x01, // 0x06: 电源输出 Enable (此暂存器设定会影响到 0x07 暂存器)
-    0x01  // 0x07: 电源输出状态 (此暂存器会受到 0x06 影响)
-};
-
-// 测试用例
-uint8_t test_cases_normal[] = {
-    0xFA, 0xFA, 0x01, 0x03, 0x7A,    // 正确的写入操作
-    0xFA, 0xFA, 0x02, 0x02, 0x00,    // 正确的读取操作
-    0xFA, 0xFA, 0x01, 0x00, 0xF9,    // 错误的写入操作 (写入只读的 0x00)
-    0xFA, 0xFA, 0x02, 0x06, 0x00,    // 错误的读取操作 (读取只写的 0x06)
-    0xFA, 0xFA, 0x01, 0x03, 0x10,    // 正确的写入最高温度
-    0xFA, 0xFA, 0x02, 0x04, 0x00,    // 正确读取电池电量高位
-    0xFA, 0xFA, 0x02, 0x07, 0x00,    // 正确读取电源状态
-    0xFA, 0xFA, 0x01, 0x04, 0x55,    // 错误的写入操作 (写入只读的 0x04)
-    0xFA, 0xFA, 0x01, 0x08, 0xF9,    // 错误的地址 (超出范围)
-    0xFA, 0xFA, 0x02, 0x0A, 0x00,    // 错误的地址 (超出范围)
-    0xFA, 0xFA, 0x02, 0x03, 0x01,    // 错误的读取操作 (Data 不为 0x00)
-    0xFA, 0xFA, 0x01, 0x03, 0x7A,    // 错误的起始码
-    0xFA, 0xFA, 0x03, 0x01, 0xF9,    // 错误的操作码
-    0xFA, 0xFA, 0x01, 0x06, 0x00,    // 正确的写入电源输出为关闭
-    0xFA, 0xFA, 0x02, 0x07, 0x00     // 正确的读取电源输出状态为关闭
-};
-
-// 测试用例
-uint8_t test_cases_incomplete[] = {
-    0xFA, 0xFA, 0x01, 0x03, 0x7A,    // 完整的写入操作
-    0xFA, 0xFA, 0x02, 0x02, 0x00,    // 完整的读取操作
-    0xFA, 0xFA, 0x01, 0x03,          // 未完成的写入操作
-    0xFA, 0xFA, 0x02, 0x04, 0x00,    // 完整的读取操作
-    0xFA, 0xFA, 0x01,                // 开始但缺少数据的写入操作
-    0xFA, 0xFA, 0x01, 0x03, 0x10,    // 完整的写入操作
-    0xFA, 0xFA, 0x02,                // 开始但缺少数据的读取操作
-    0xFA, 0xFA, 0x02, 0x05, 0x00,    // 完整的读取操作 (电池电量低位)
-    0xFA, 0xFA, 0x01, 0x06, 0x00,    // 完整的写入操作 (电源输出启动)
-    0xFA, 0xFA, 0x02, 0x04, 0x00,    // 完整的读取操作
-    0xFA, 0xFA,                      // 开始但缺少数据
-    0xFA, 0xFA, 0x02, 0x07, 0x00,    // 完整的读取操作 (电源状态)
-    0xFA, 0xFA, 0x01, 0x03,          // 未完成的写入操作
-    0xFA, 0xFA, 0x01, 0x03, 0xF9,    // 完整的写入操作
-    0xFA, 0xFA, 0x02, 0x02, 0x00,    // 完整的读取操作
-    0xFA, 0xFA, 0x01, 0x06,          // 未完成的写入操作
-    0xFA, 0xFA, 0x02, 0x05, 0x00,    // 完整的读取操作
-    0xFA, 0xFA, 0x01, 0x03, 0x7A,    // 完整的写入操作
-    0xFA, 0xFA, 0x02, 0x04, 0x00     // 完整的读取操作
-};
-
-extern void send_response(uint8_t *);
-extern void print_registers();
-
-int main() {
-    uint8_t response[5]; // 回应数据
-
-
-
-
-
-    print_registers();  // 打印暂存器状态
-    return 0;
-}
-
-// 模拟回传数据的函数
-void send_response(uint8_t *response) {
-    printf("Response: ");
-    for (int i = 0; i < 5; i++) {
-        printf("%02X ", response[i]);
-    }
-    printf("\n");
-}
-
-// 打印暂存器状态的函数
-void print_registers() {
-    printf("\n=== 暂存器状态 ===\n");
-    for (int i = 0; i < 8; i++) {
-        printf("Register 0x%02X: 0x%02X\n", i, registers[i]);
-    }
-}
-
-#  ChatGPT
-为此电池管理 IC 实现通讯指令解析器，可以分以下步骤进行：
-
-1. **指令解析**：
-   - 首先检查前两字节是否是 `0xFA 0xFA`，否则返回错误码。
-   - 解析 `Operation` 字节，判断是读取 (`0x02`) 或写入 (`0x01`)。
-   - 检查 `Register` 地址是否合法（在 `0x00` 到 `0x07` 之间）。
-   - 对于读取操作，确保 `Data` 字节为 `0x00`，否则返回错误码 `0x05`。
-
-2. **操作逻辑**：
-   - 根据 `Operation` 和 `Register` 地址执行操作。对于写入操作，检查是否为可写暂存器，若尝试写入只读暂存器则返回错误码 `0x02`。对于读取操作，检查是否为可读暂存器，若尝试读取只写暂存器则返回错误码 `0x03`。
-   - 操作成功时返回对应的响应格式，包含 `Register` 和 `Data` 信息。
-
-3. **错误处理**：
-   - 设置不同的错误码，如无效地址（`0x01`）、只读写入错误（`0x02`）、只写读取错误（`0x03`）、无效操作码（`0x04`）、读取操作时数据栏位非 `0x00`（`0x05`）。
-
-4. **模拟通讯中断和边界条件**：
-   - 在 `test_cases_incomplete` 中模拟接收不完整的指令，确保程序能检测不完整数据并安全返回而不崩溃。
-
-下面是代码实现：
-
-```c
-#include <stdio.h>
-#include <stdint.h>
-
-uint8_t registers[8] = {0x01, 0x00, 0x32, 0x50, 0x03, 0xA5, 0x01, 0x01};
-
-// 错误代码
-#define ERROR_INVALID_ADDRESS 0x01
-#define ERROR_WRITE_READ_ONLY 0x02
-#define ERROR_READ_WRITE_ONLY 0x03
-#define ERROR_INVALID_OPCODE  0x04
-#define ERROR_INVALID_DATA    0x05
-
-// 外部函数
-extern void send_response(uint8_t *);
-extern void print_registers();
-
-void process_command(uint8_t *command) {
-    uint8_t response[5] = {0xFA, 0xFA}; // 初始化响应前缀
-
-    if (command[0] != 0xFA || command[1] != 0xFA) {
-        response[2] = 0x13; response[3] = 0x00; response[4] = ERROR_INVALID_OPCODE;
-        send_response(response);
-        return;
-    }
-
-    uint8_t operation = command[2];
-    uint8_t reg = command[3];
-    uint8_t data = command[4];
-
-    if (reg > 0x07) {
-        response[2] = 0x13; response[3] = 0x00; response[4] = ERROR_INVALID_ADDRESS;
-        send_response(response);
-        return;
-    }
-
-    if (operation == 0x01) { // 写入操作
-        if (reg == 0x00 || reg == 0x02 || reg == 0x04 || reg == 0x05 || reg == 0x07) {
-            response[2] = 0x13; response[3] = 0x00; response[4] = ERROR_WRITE_READ_ONLY;
-        } else {
-            registers[reg] = data;
-            response[2] = 0x11; response[3] = reg; response[4] = data;
-        }
-    } else if (operation == 0x02) { // 读取操作
-        if (data != 0x00) {
-            response[2] = 0x13; response[3] = 0x00; response[4] = ERROR_INVALID_DATA;
-        } else if (reg == 0x06) {
-            response[2] = 0x13; response[3] = 0x00; response[4] = ERROR_READ_WRITE_ONLY;
-        } else {
-            response[2] = 0x12; response[3] = reg; response[4] = registers[reg];
-        }
-    } else {
-        response[2] = 0x13; response[3] = 0x00; response[4] = ERROR_INVALID_OPCODE;
-    }
-
-    send_response(response);
-}
-
-int main() {
-    uint8_t test_case[] = {0xFA, 0xFA, 0x01, 0x03, 0x7A};
-    process_command(test_case);
-    print_registers();
-    return 0;
-}
-
-void send_response(uint8_t *response) {
-    printf("Response: ");
-    for (int i = 0; i < 5; i++) {
-        printf("%02X ", response[i]);
-    }
-    printf("\n");
-}
-
-void print_registers() {
-    printf("\n=== Register State ===\n");
-    for (int i = 0; i < 8; i++) {
-        printf("Register 0x%02X: 0x%02X\n", i, registers[i]);
-    }
-}
-```
-
-### 代码说明：
-- `process_command` 函数处理每个指令，并根据不同的情况返回相应的响应码或错误码。
-- `send_response` 函数模拟设备向外部发送响应。
-- `print_registers` 函数打印当前暂存器状态。
-
-测试用例：
-- `main` 中的 `test_case` 是一个写入指令，用于测试写入 `0x03` 暂存器的值。
+`git merge` 是 Git 中非常强大的命令，能够帮助你在多个分支之间进行代码合并，处理冲突和管
