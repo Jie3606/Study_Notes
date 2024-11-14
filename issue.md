@@ -1,3 +1,18 @@
+----
+    theme: white.css
+    width: 960
+    height: 700
+    minScale: 0.2
+    maxScale: 1.5
+    controls: true
+    transition: 'slide'
+    mouseWhee: 'true'
+----
+
+
+
+<!-- slide -->
+
 # 修改扩容linux的 “ / " 目录大小的命令。
 
 ```
