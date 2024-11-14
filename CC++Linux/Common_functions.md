@@ -9,8 +9,9 @@ struct tm t = *sysTime;
 
 struct timeval
 {
-	long tv_sec;
-	long tv_usec;
+	long tv_sec ;
+
+	long tv_usec ;
 };
 struct tm {
   int tm_sec;
@@ -28,7 +29,7 @@ struct timespec {
   long tv_nsec;
 };
 ```
-
+int main() return 0; main函数的返回值 0 代表正常退出，非 0 代表异常退出
 # 可变参
 
 ```c++
