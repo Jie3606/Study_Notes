@@ -3,9 +3,6 @@
 # $1= test case name
 # $2= purpose
 
-
-
-
 function func_ethernet_speed_duplex () {
     local purpose=$(unpack_by_space "${2}")
     local result=""
