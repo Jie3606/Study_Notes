@@ -293,9 +293,9 @@ Changes to be committed:
   commit 74b50ef
   Author: Your Name <your.email@example.com>
   Date:   Mon Nov 14 14:35:46 2024 +0000
-
+  
       updata
-
+  
    3 files changed, 0 insertions(+), 0 deletions(-)
    rename git.md => Git.md (100%)
    rename Weekly_Report&schedule.md => Weekly_Report_schedule.md (100%)
@@ -1430,3 +1430,364 @@ git reset --hard HEAD
   ```
 
 `git merge` 是 Git 中非常强大的命令，能够帮助你在多个分支之间进行代码合并，处理冲突和管
+
+
+
+
+
+# git commit --amend  使用方法
+
+###### ChatGPT 说：
+
+ChatGPT
+
+`git commit --amend` 是 Git 用于修改最近一次提交的命令，支持编辑提交信息或补充更改，而不会创建新的提交。以下是常见的使用方法及步骤：
+
+------
+
+### **基本语法**
+
+```
+bash
+
+
+复制代码
+git commit --amend
+```
+
+------
+
+### **1. 修改提交信息**
+
+假设你最近一次提交的消息有误：
+
+#### 操作步骤：
+
+1. 查看最近的提交：
+
+   ```
+   bash
+   
+   
+   复制代码
+   git log -1
+   ```
+
+   输出可能如下：
+
+   ```
+   sql复制代码commit abc1234
+   Author: Your Name <your.email@example.com>
+   Date:   Thu Nov 15 10:00 2024
+   
+       Incorrect commit message
+   ```
+
+2. 修改提交信息：
+
+   ```
+   bash
+   
+   
+   复制代码
+   git commit --amend
+   ```
+
+   Git 会打开默认编辑器（如 Vim 或 Nano），显示之前的提交信息：
+
+   ```
+   sql
+   
+   
+   复制代码
+   Incorrect commit message
+   ```
+
+   编辑后保存为：
+
+   ```
+   sql
+   
+   
+   复制代码
+   Corrected commit message
+   ```
+
+3. 提交完成，查看新的提交信息：
+
+   ```
+   bash
+   
+   
+   复制代码
+   git log -1
+   ```
+
+   你会看到新的提交信息，原来的提交信息被替换。
+
+------
+
+### **2. 添加漏掉的文件**
+
+如果你在最近一次提交时忘记添加某些文件，可以将它们补充到该提交中。
+
+#### 示例：
+
+1. 提交代码后发现漏掉一个文件：
+
+   ```
+   bash
+   
+   
+   复制代码
+   git commit -m "Initial commit"
+   ```
+
+2. 添加漏掉的文件到暂存区：
+
+   ```
+   bash
+   
+   
+   复制代码
+   git add missing_file.txt
+   ```
+
+3. 使用 `--amend` 将它们合并到最近一次提交：
+
+   ```
+   bash
+   
+   
+   复制代码
+   git commit --amend
+   ```
+
+   Git 会让你确认是否修改提交信息。如果提交信息无需修改，可以直接保存。
+
+------
+
+### **3. 同时修改提交信息和内容**
+
+如果你需要同时更改提交的内容和提交信息，可以将二者结合。
+
+#### 示例：
+
+1. 添加文件并修改提交信息：
+
+   ```
+   bash复制代码git add another_file.txt
+   git commit --amend -m "Updated initial commit with new files"
+   ```
+
+------
+
+### **4. 查看效果**
+
+通过以下命令检查最近的提交信息和更改：
+
+```
+bash
+
+
+复制代码
+git log -1
+```
+
+------
+
+### **5. 使用 `git commit --amend` 的注意事项**
+
+#### 1. **已推送的提交**
+
+如果你已经将提交推送到远程仓库，使用 `--amend` 会更改提交的哈希值。这种情况下，需要强制推送到远程仓库：
+
+```
+bash
+
+
+复制代码
+git push --force
+```
+
+⚠️ **警告**：强制推送可能导致其他协作开发者的代码分支出现问题，在多人协作中需谨慎使用。
+
+------
+
+#### 2. **未推送的提交**
+
+如果提交尚未推送到远程仓库，`git commit --amend` 是完全安全的，可以随意修改提交内容或信息。
+
+------
+
+### **6. 常用命令总结**
+
+#### 修改最近提交的提交信息：
+
+```
+bash
+
+
+复制代码
+git commit --amend -m "New commit message"
+```
+
+#### 添加遗漏的文件到最近的提交：
+
+```
+bash复制代码git add forgotten_file.txt
+git commit --amend
+```
+
+#### 同时修改提交内容和提交信息：
+
+```
+bash复制代码git add updated_file.txt
+git commit --amend -m "Updated commit message with fixed content"
+```
+
+#### 查看最近的提交内容：
+
+```
+bash
+
+
+复制代码
+git log -1
+```
+
+------
+
+`git commit --amend` 是一个非常强大的工具，适用于单人开发或未推送的提交优化。在协作开发中，推送后的提交需慎用此命令以避免破坏团队的提交历史。
+
+
+
+
+
+
+
+##### 您说：
+
+修改 git 默认编辑器为 vim
+
+
+
+###### ChatGPT 说：
+
+ChatGPT
+
+要将 Git 的默认编辑器设置为 `vim`，可以通过以下步骤完成：
+
+------
+
+### **1. 全局设置 Git 默认编辑器为 Vim**
+
+运行以下命令，将 Git 的全局编辑器设置为 `vim`：
+
+```
+bash
+
+
+复制代码
+git config --global core.editor vim
+```
+
+- 这会将 `vim` 设置为全局默认编辑器。
+
+- 配置会被保存到 
+
+  ```
+  ~/.gitconfig
+  ```
+
+   文件中，可以通过以下命令查看：
+
+  ```
+  bash
+  
+  
+  复制代码
+  git config --global --get core.editor
+  ```
+
+------
+
+### **2. 针对单个项目设置默认编辑器**
+
+如果只想在当前项目中设置默认编辑器，可以使用以下命令：
+
+```
+bash
+
+
+复制代码
+git config core.editor vim
+```
+
+- 此设置仅影响当前项目，不会覆盖全局设置。
+
+------
+
+### **3. 验证设置**
+
+运行以下命令验证编辑器是否生效：
+
+```
+bash
+
+
+复制代码
+git config --global --get core.editor
+```
+
+输出应为：
+
+```
+复制代码
+vim
+```
+
+------
+
+### **4. 测试效果**
+
+使用一个需要编辑器的命令测试设置，例如修改提交信息：
+
+```
+bash
+
+
+复制代码
+git commit --amend
+```
+
+- 如果配置成功，Git 会打开 `vim` 作为编辑器。
+
+------
+
+### **5. 更改全局 Git 配置文件**
+
+你也可以直接编辑 Git 的全局配置文件（`~/.gitconfig`），手动添加或修改以下内容：
+
+```
+ini复制代码[core]
+    editor = vim
+```
+
+保存后，设置立即生效。
+
+------
+
+### **附加说明：使用不同的 Vim**
+
+如果你的系统有多个 Vim 版本，或者你希望指定具体的路径，可以在设置时使用 Vim 的完整路径：
+
+```
+bash
+
+
+复制代码
+git config --global core.editor "/usr/bin/vim"
+```
+
+这样可以确保 Git 使用正确的 Vim 二进制文件。
