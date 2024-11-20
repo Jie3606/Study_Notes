@@ -18,3 +18,7 @@ tar -zcvf 打包并且压缩 -zxvf 解压缩并且解包
 clear -清除终端
 reset -重置终端
 source ~/.bashrc -重新加载配置文件
+
+
+tree -L 2 : 显示两层
+ls -lR : 显示当前文件夹下所有文件详细信息
