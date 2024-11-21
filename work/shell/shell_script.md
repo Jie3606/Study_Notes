@@ -9,8 +9,7 @@ $$ : 当前脚本的识别码
 $_ : 上一条命令的最后一个参数
 ```
 
-```shell
-# Makefile
+```Makefile
 hey : one two
     echo $@ 输出hey
     echo $? 输出比目标更新的所有先决条件
