@@ -84,7 +84,7 @@ LD_LIBRARY_PATH ——>  ——> /lib/，/usr/lib
 ---
 
 # makefile
-```c++
+```Makefile
  app:div.c add.c mult.c sub.c main.c
 
  		gcc div.c add.c mult.c sub.c main.c -o app
@@ -116,8 +116,9 @@ $(target):$(objs)
  		gcc -c main.c -o main.o
 
  模式匹配
+
 %.o:%.c
-		$(CC) -c $< -o $@ 
+		$(CC) -c $< -o $@
 .PHONY:clean
 clean:
 		rm -f $(objs)
