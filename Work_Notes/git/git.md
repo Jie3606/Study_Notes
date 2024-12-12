@@ -133,7 +133,7 @@ git push origin master --force
 - `git reset --hard HEAD~1` 会将本地的提交回退到上一个 commit。
 - `git push origin master --force` 会将修改后的历史推送到远程仓库，覆盖远程的提交。
 
-### 总结：
+### 总结
 
 - **保留更改**（在工作区或暂存区）：`git reset --soft` 或 `git reset --mixed`
 - **彻底丢弃更改**：`git reset --hard`
