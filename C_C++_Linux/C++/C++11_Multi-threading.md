@@ -1,5 +1,4 @@
 
-
 wait()用来等一个东西
 
 如果第二个参数lambda表达式的返回值是false,那么wait()将互斥量解锁，并阻塞到本行，
@@ -15,17 +14,11 @@ wait()用来等一个东西
 
 wait中要有第二个参数（正确判断数据是否存在）生产者消费者之中，队列中并没有数据但是唤醒了数据的读取(wait被唤醒但是没有数据)
 
-
-
 原子操作：
 
 1. atm++(是原子操作) atm= atm + 1(不是原子操作)
 2. cout << atm << endl; 读是原子操作，但是整个行不是原子操作，cout出的可能是曾经。
 3.  atomic<int> atm; auto atm2 = atm;//定义时初始化不允许，copyDestruct = delete,无法用拷贝构造，赋值也不行load():以原子方式读atomic的值，store（）：以原子方式写入内容
-
-
-
-
 
 线程：用户级线程，内核级线程，IO密集型，计算密集型(线程个数不超过内核数量)
 
@@ -445,7 +438,3 @@ public:
 	}
 };
 ```
-
-
-
-[def]: :\Users\刘杰\Pictures\mutex&condition.pn
