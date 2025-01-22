@@ -73,10 +73,9 @@ gantt
 ```graphviz
 digraph finite_state_machine {
     rankdir=LR;
-    size="8,5"
+    size="7,4"
     node [shape = doublecircle]; S;
     node [shape = point ]; qi
-
     node [shape = circle];
     qi -> S;
     S  -> q1 [ label = "a" ];
@@ -91,8 +90,8 @@ digraph finite_state_machine {
 
 ### 脚注
 
-这里是一个脚注引用 [^1]，这里是\color{red}另一个脚注引用[^bignote]。
-这里是一个脚注引用[^1]，这里是另一个脚注引用[^bignote]。
+这里是一个脚注引用 [^1]，这里是另一个脚注引用 [^bignote]。
+这里是一个脚注引用 [^1]，这里是另一个脚注引用 [^bignote]。
 
 [^1]: 第一个脚注定义。
 [^bignote]: 脚注定义可使用多段内容。
