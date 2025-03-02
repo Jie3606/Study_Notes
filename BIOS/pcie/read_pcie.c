@@ -1,265 +1,190 @@
-/**
- * @Author: jieliu
- * @Date: 2/24/2025, 2:06:57 PM
- * @LastEditors: jieliu
- * @LastEditTime: 2/24/2025, 5:24:14 PM
- * Description: read and print pcie config memory infomation
- */
-
 #include <stdio.h>
-#include <stdint.h>
+#include <fcntl.h>
 #include <unistd.h>
-#include <sys/io.h>
-#include <stdlib.h>
+#include <sys/mman.h>
+#include <stdint.h>
+#include <string.h>
 
-// PCI 配置空间访问的 IO 端口
-#define PCI_CONFIG_ADDRESS 0xCF8
-#define PCI_CONFIG_DATA 0xCFC
+#define DMI_PATH "/sys/firmware/dmi/tables/DMI"
+#define SMBIOS_ANCHOR "_SM_"
+#define DMI_ANCHOR "_DMI_"
 
-// ANSI 转义序列
-#define ANSI_COLOR_YELLOW "\x1b[93m"
-#define ANSI_COLOR_RESET "\x1b[0m"
-#define ANSI_COLOR_RED "\x1b[91m" // 红色
+#pragma pack(push, 1)  // 禁用内存对齐
+typedef struct {
+    char anchor[4];       // 固定标识符 "_SM_"
+    uint8_t checksum;     // EPS校验和
+    uint8_t entry_len;    // EPS结构长度
+    uint8_t major_ver;    // 主版本号 (e.g. 3 for SMBIOS 3.0)
+    uint8_t minor_ver;    // 次版本号
+    uint16_t max_size;    // 最大结构尺寸
+    uint8_t ep_rev;       // EPS修订版本
+    uint8_t formatted[5]; // 保留字段
+    char dmi_anchor[5];   // 固定标识符 "_DMI_"
+    uint8_t dmi_checksum;  // DMI校验和
+    uint16_t table_len;   // DMI表总长度
+    uint32_t table_addr;  // DMI表物理地址（SMBIOS 2.x）
+    uint16_t num_structs; // 结构体总数
+    uint8_t bcd_rev;      // BCD修订版本
+} SMBIOS_EPS;
+#pragma pack(pop)         // 恢复默认对齐
 
-// 配置地址生成
-uint32_t pci_config_address(uint8_t bus, uint8_t dev, uint8_t func, uint8_t offset)
-{
-    return (1 << 31) |      // 使能位
-           (bus << 16) |    // 总线号
-           (dev << 11) |    // 设备号
-           (func << 8) |    // 功能号
-           (offset & 0xFC); // 寄存器偏移（对齐到 4 字节）
+
+typedef struct {
+    uint8_t type;
+    uint8_t length;
+    uint16_t handle;
+    uint8_t data[];
+} SMBIOS_STRUCT;
+
+const char *bios_chars[] = {
+    "ISA is supported",
+    "PCI is supported",
+    "PNP is supported",
+    "BIOS is upgradeable",
+    "BIOS shadowing is allowed",
+    "ESCD support is available",
+    "Boot from CD is supported",
+    "Selectable boot is supported",
+    "BIOS ROM is socketed",
+    "EDD is supported",
+    "5.25\"/360 kB floppy services are supported (int 13h)",
+    "5.25\"/1.2 MB floppy services are supported (int 13h)",
+    "3.5\"/720 kB floppy services are supported (int 13h)",
+    "3.5\"/2.88 MB floppy services are supported (int 13h)",
+    "Print screen service is supported (int 5h)",
+    "8042 keyboard services are supported (int 9h)",
+    "Serial services are supported (int 14h)",
+    "Printer services are supported (int 17h)",
+    "CGA/mono video services are supported (int 10h)",
+    "AGP is supported",
+    "LS-120 boot is supported",
+    "ATAPI Zip drive boot is supported",
+    "BIOS boot specification is supported"
+};
+
+void print_header(SMBIOS_EPS *eps) {
+    printf("# dmidecode 3.3\n");
+    printf("Getting SMBIOS data from sysfs.\n");
+    printf("SMBIOS %d.%d present.\n", eps->major_ver, eps->minor_ver);
+    printf("%d structures occupying %d bytes.\n",
+           eps->num_structs, eps->table_len);
+    printf("Table at 0x%08X.\n\n", eps->table_addr);
 }
 
-// 读取32位配置寄存器
-uint32_t pci_read_config(uint8_t bus, uint8_t dev, uint8_t func, uint8_t offset)
-{
-    outl(pci_config_address(bus, dev, func, offset), PCI_CONFIG_ADDRESS);
-    return inl(PCI_CONFIG_DATA);
-}
+char* get_string(SMBIOS_STRUCT *s, uint8_t index) {
+    if (index == 0) return "Not Specified";
+    char *p = (char*)s + s->length;
 
-// 检查设备是否存在
-int device_exists(uint8_t bus, uint8_t dev, uint8_t func)
-{
-    uint32_t vendor = pci_read_config(bus, dev, func, 0x00);
-    return (vendor != 0xFFFFFFFF && (vendor & 0xFFFF) != 0xFFFF);
-}
-
-void print_config_info(uint8_t bus, uint8_t device, uint8_t func)
-{
-    // 读取 Vendor ID 和 Device ID
-    uint32_t vendor_device = pci_read_config(bus, device, func, 0x00);
-    uint16_t vendor_id = vendor_device & 0xFFFF;
-    uint16_t device_id = (vendor_device >> 16) & 0xFFFF;
-
-    // 读取 Class Code、Subclass 和 Prog IF
-    uint32_t class_rev = pci_read_config(bus, device, func, 0x08);
-    uint8_t class_code = (class_rev >> 24) & 0xFF;
-    uint8_t subclass = (class_rev >> 16) & 0xFF;
-    uint8_t prog_if = (class_rev >> 8) & 0xFF;
-
-    // 读取子系统信息
-    uint32_t subsystem_info = pci_read_config(bus, device, func, 0x2C);
-    uint16_t subsystem_vendor_id = subsystem_info & 0xFFFF;
-    uint16_t subsystem_device_id = (subsystem_info >> 16) & 0xFFFF;
-
-    // 打印基础信息
-    printf("\n== PCI Device @ %02X:%02X.%X ==\n", bus, device, func);
-    printf("  Vendor: %04X  Device: %04X\n", vendor_id, device_id);
-    printf("  Class: %02X  Subclass: %02X  Prog IF: %02X\n", class_code, subclass, prog_if);
-    printf("  Subsystem: %04X:%04X\n", subsystem_vendor_id, subsystem_device_id);
-
-    // 判断设备类型
-    if (class_code == 0x06)
-    { // 桥设备
-        const char *bridge_type = "Generic PCI Bridge";
-        switch (subclass)
-        {
-        case 0x04:
-            bridge_type = "PCI-to-PCI Bridge";
-            break;
-        case 0x05:
-            bridge_type = "PCI-to-CardBus Bridge";
-            break;
-        case 0x06:
-            bridge_type = "RACEway Bridge";
-            break;
-        case 0x07:
-            bridge_type = "PCI-to-PCI (Subtractive)";
-            break;
-        case 0x09:
-            bridge_type = "PCI Host Bridge";
-            break;
-        }
-
-        printf("  Device Type: %s\n", bridge_type);
-
-        // 读取桥设备专用信息
-        uint32_t bridge_config = pci_read_config(bus, device, func, 0x18);
-        uint8_t secondary_bus = (bridge_config >> 8) & 0xFF;
-        uint8_t subordinate_bus = (bridge_config >> 16) & 0xFF;
-
-        printf("  Secondary Bus: %02X\n", secondary_bus);
-        printf("  Subordinate Bus: %02X\n", subordinate_bus);
-
-        // 读取I/O和内存地址范围
-        uint32_t io_base = pci_read_config(bus, device, func, 0x1C);
-        uint32_t mem_base = pci_read_config(bus, device, func, 0x20);
-        printf("  I/O Base: 0x%08X\n  Mem Base: 0x%08X\n", io_base, mem_base);
+    while (--index) {
+        p += strlen(p) + 1;
+        if (*p == 0 && *(p+1) == 0) return "BAD INDEX";
     }
-    else
-    { // 普通设备
-        const char *device_type = "Unknown Device";
-        switch (class_code)
-        {
-        case 0x01:
-            device_type = "Mass Storage Controller";
-            break;
-        case 0x02:
-            device_type = "Network Controller";
-            break;
-        case 0x03:
-            device_type = "Display Controller";
-            break;
-        case 0x04:
-            device_type = "Multimedia Controller";
-            break;
-        case 0x05:
-            device_type = "Memory Controller";
-            break;
-        case 0x06:
-            device_type = "Bridge Device";
-            break;
-        case 0x07:
-            device_type = "Communication Controller";
-            break;
-        case 0x08:
-            device_type = "Generic System Peripheral";
-            break;
-        case 0x09:
-            device_type = "Input Device";
-            break;
-        case 0x0A:
-            device_type = "Docking Station";
-            break;
-        case 0x0B:
-            device_type = "Processor";
-            break;
-        case 0x0C:
-            device_type = "Serial Bus Controller";
-            break;
-        }
+    return p;
+}
 
-        printf("  Device Type: %s\n", device_type);
+void print_bios(SMBIOS_STRUCT *s) {
+    printf("Handle 0x%04X, DMI type %d, %d bytes\n",
+           s->handle, s->type, s->length);
+    printf("BIOS Information\n");
 
-        // 显示具体设备类型（示例：显示控制器）
-        if (class_code == 0x03 && subclass == 0x00)
-        {
-            printf("  [VGA Compatible Controller]\n");
-        }
+    printf("\tVendor: %s\n", get_string(s, s->data[4]));
+    printf("\tVersion: %s\n", get_string(s, s->data[5]));
+    printf("\tRelease Date: %s\n", get_string(s, s->data[8]));
+    printf("\tAddress: 0x%04X\n", *(uint16_t*)(s->data+6));
+    printf("\tRuntime Size: %d kB\n", s->data[10] * 64);
+    printf("\tROM Size: %d kB\n", (1 << s->data[11]) * 512);
 
-        // 读取并显示BAR信息
-        uint32_t bar0 = pci_read_config(bus, device, func, 0x10);
-        uint32_t bar1 = pci_read_config(bus, device, func, 0x14);
-        uint32_t bar2 = pci_read_config(bus, device, func, 0x18);
-        uint32_t bar3 = pci_read_config(bus, device, func, 0x1C);
-        uint32_t bar4 = pci_read_config(bus, device, func, 0x20);
-        uint32_t bar5 = pci_read_config(bus, device, func, 0x24);
-
-        printf("  BAR0: 0x%08X\n  BAR1: 0x%08X\n  BAR2: 0x%08X\n", bar0, bar1, bar2);
-        printf("  BAR3: 0x%08X\n  BAR4: 0x%08X\n  BAR5: 0x%08X\n", bar3, bar4, bar5);
-
-        // 读取中断信息
-        uint8_t int_line = pci_read_config(bus, device, func, 0x3C) & 0xFF;
-        uint8_t int_pin = (pci_read_config(bus, device, func, 0x3C) >> 8) & 0xFF;
-        printf("  IRQ Line: %02X\n  IRQ Pin:  %02X\n", int_line, int_pin);
+    printf("\tCharacteristics:\n");
+    uint64_t chars = *(uint64_t*)(s->data+0x0C);
+    for (int i=0; i<23; i++) {
+        if (chars & (1ULL << i))
+            printf("\t\t%s\n", bios_chars[i]);
     }
+}
+
+void print_system(SMBIOS_STRUCT *s) {
+    printf("Handle 0x%04X, DMI type %d, %d bytes\n",
+           s->handle, s->type, s->length);
+    printf("System Information\n");
+
+    printf("\tManufacturer: %s\n", get_string(s, s->data[4]));
+    printf("\tProduct Name: %s\n", get_string(s, s->data[5]));
+    printf("\tVersion: %s\n", get_string(s, s->data[6]));
+    printf("\tSerial Number: %s\n", get_string(s, s->data[7]));
+
+    uint8_t *uuid = s->data + 8;
+    printf("\tUUID: ");
+    for(int i=0; i<16; i++)
+        printf("%02X%c", uuid[i], (i==3||i==5||i==7||i==9)?'-':' ');
     printf("\n");
 }
 
-// 打印配置空间内容
-void print_config_space(uint8_t bus, uint8_t dev, uint8_t func)
-{
-    print_config_info(bus, dev, func);
-    printf(ANSI_COLOR_RED "    00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f\n" ANSI_COLOR_RESET);
-    printf("   +------------------------------------------------+\n");
+int main() {
+    int fd = open(DMI_PATH, O_RDONLY);
+    if (fd == -1) { /* 错误处理 */ }
 
-    for (int row = 0; row < 4; row++)
-    {
-        printf(ANSI_COLOR_RED "%02x" ANSI_COLOR_RESET " |", row * 16);
-        for (int col = 0; col < 16; col++)
-        {
-            uint8_t offset = row * 16 + col;
-            uint32_t value = pci_read_config(bus, dev, func, offset & 0xFC);
-            uint8_t byte_value = (value >> ((offset % 4) * 8)) & 0xFF;
+    SMBIOS_EPS eps;
+    ssize_t read_size = read(fd, &eps, sizeof(eps));
+    close(fd);
 
-            if (byte_value != 0)
-            {
-                printf(ANSI_COLOR_YELLOW "%02x " ANSI_COLOR_RESET, byte_value);
-            }
-            else
-            {
-                printf("%02x ", byte_value);
-            }
-        }
-        printf("|\n");
-    }
-
-    printf("   +------------------------------------------------+\n");
-}
-
-// 递归扫描PCI总线
-void scan_bus(uint8_t bus);
-
-// 处理PCI-PCI桥设备
-void process_bridge(uint8_t primary_bus, uint8_t dev, uint8_t func)
-{
-    uint32_t config = pci_read_config(primary_bus, dev, func, 0x18);
-    uint8_t secondary_bus = (config >> 8) & 0xFF;
-    printf("Found PCI-PCI Bridge at %02x:%02x.%x -> Secondary Bus %02x\n",
-           primary_bus, dev, func, secondary_bus);
-    scan_bus(secondary_bus);
-}
-
-// 扫描单个设备
-void scan_device(uint8_t bus, uint8_t dev)
-{
-    for (uint8_t func = 0; func < 8; func++)
-    {
-        if (!device_exists(bus, dev, func))
-            continue;
-
-        print_config_space(bus, dev, func);
-
-    }
-}
-
-// 扫描整个总线
-void scan_bus(uint8_t bus)
-{
-    for (uint8_t dev = 0; dev < 32; dev++)
-    {
-        // 快速检测：如果设备 dev 功能 0 不存在则跳过整个设备
-        if (dev > 0 && !device_exists(bus, dev, 0))
-            continue;
-
-        scan_device(bus, dev);
-    }
-}
-
-int main()
-{
-    if (iopl(3) != 0)
-    {
-        fprintf(stderr, "需要ROOT权限运行！\n");
+    // 新增验证步骤
+    if (read_size != sizeof(eps)) {
+        fprintf(stderr, "读取EPS结构不完整: %zd/%zu 字节\n",
+                read_size, sizeof(eps));
         return 1;
     }
 
-    //system("clear");
+    if (memcmp(eps.anchor, "_SM_", 4) != 0) {
+        fprintf(stderr, "无效的SMBIOS锚点签名: %.4s\n", eps.anchor);
+        return 1;
+    }
 
-    printf("PCI/PCIe 设备配置空间扫描：\n");
-    scan_bus(0); // 从总线0开始扫描
+    if (memcmp(eps.dmi_anchor, "_DMI_", 5) != 0) {
+        fprintf(stderr, "无效的DMI锚点签名: %.5s\n", eps.dmi_anchor);
+        return 1;
+    }
 
-    iopl(0);
+    uint8_t checksum = 0;
+    for (int i = 0; i < eps.entry_len; i++) {
+        checksum += ((uint8_t*)&eps)[i];
+    }
+    if (checksum != 0) {
+        fprintf(stderr, "校验和验证失败: 0x%02X\n", checksum);
+        return 1;
+    }
+
+
+
+    print_header(&eps);
+
+    fd = open(DMI_PATH, O_RDONLY);
+    off_t size = lseek(fd, 0, SEEK_END);
+    lseek(fd, 0, SEEK_SET);
+
+    uint8_t *dmi = mmap(NULL, size, PROT_READ, MAP_SHARED, fd, 0);
+    uint8_t *p = dmi + sizeof(SMBIOS_EPS);
+
+    int struct_count = 0;
+    while (p < dmi + size) {
+        SMBIOS_STRUCT *s = (SMBIOS_STRUCT*)p;
+        if (s->type == 127) break;
+
+        switch(s->type) {
+            case 0: print_bios(s); break;
+            case 1: print_system(s); break;
+            // 可扩展其他类型...
+        }
+
+        p += s->length;
+        while (*p != 0 || *(p+1) != 0) p++;
+        p += 2;
+        struct_count++;
+    }
+
+    printf("\nWrong DMI structures count: %d announced, only %d decoded.\n",
+           eps.num_structs, struct_count);
+
+    munmap(dmi, size);
+    close(fd);
     return 0;
 }
